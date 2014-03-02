@@ -4,6 +4,7 @@ ter)](https://travis-ci.org/computerlyrik/chef-mailman)
 Description
 ===========
 
+Code repo: https://github.com/computerlyrik/chef-mailman
 
 Requirements
 ============
