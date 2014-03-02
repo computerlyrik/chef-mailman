@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/computerlyrik/chef-mailman.png?branch=mas
+ter)](https://travis-ci.org/computerlyrik/chef-mailman)
+
 Description
 ===========
 
