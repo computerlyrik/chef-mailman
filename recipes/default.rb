@@ -21,18 +21,18 @@
 
 ###### Exim configuration
 
-#TODO presset exim4 configuration
+# TODO: presset exim4 configuration
 package "exim4"
 service "exim4"
 
 template "/etc/exim4/conf.d/main/04_exim_config_mailman" do
-  notifies :restart, resources(:service => "exim4")
+  notifies :restart, service["exim4"]
 end
 template "/etc/exim4/conf.d/transport/40_exim_config_mailman"do
-  notifies :restart, resources(:service => "exim4")
+  notifies :restart, service["exim4"]
 end
 template "/etc/exim4/conf.d/router/101_exim_config_mailman"do
-  notifies :restart, resources(:service => "exim4")
+  notifies :restart, service["exim4"]
 end
 
 ######## Apache2 configuration
@@ -46,13 +46,13 @@ end
 
 apache_site "mailman.conf"
 
-#apache_site "default" do
-# enable false
-#end
+# apache_site "default" do
+#  enable false
+# end
 
 ######## Mailman configuration
 
-#TODO: set preseed for language options
+# TODO: set preseed for language options
 package "mailman"
 
 service "mailman" do
@@ -64,9 +64,8 @@ template "/etc/aliases"
 
 execute "newaliases" do
   action :nothing
-  subscribes :run, resources(:template => "/etc/aliases")
+  subscribes :run, template["/etc/aliases"]
 end
-
 
 node.set_unless["mailman"]["mailman_password"] = secure_password
 
@@ -74,21 +73,19 @@ mailman_list "mailman" do
   email node["mailman"]["mailman_email"]
   password node["mailman"]["mailman_password"]
   action :create
-  notifies :start, resources(:service => "mailman")
+  notifies :start, service["mailman"]
 end
-
 
 template "/etc/mailman/mm_cfg.py" do
-  notifies :restart, resources(:service => "mailman")
+  notifies :restart, service["mailman"]
 end
 
-if not node['mailman']['site_pass'].nil?
-  execute "site_pass" do
-    command "mmsitepass #{node['mailman']['site_pass']}"
-  end
+execute "site_pass" do
+  command "mmsitepass #{node['mailman']['site_pass']}"
+  only_if { node['mailman']['site_pass'].nil? }
 end
-if not node['mailman']['list_creator'].nil?
-  execute "list_creator" do
-    command "mmsitepass -c #{node['mailman']['list_creator']}"
-  end
+
+execute "list_creator" do
+  command "mmsitepass -c #{node['mailman']['list_creator']}"
+  only_if { node['mailman']['list_creator'].nil? }
 end

@@ -16,13 +16,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-
 include Chef::Mixin::ShellOut
 include Opscode::OpenSSL::Password
 
 action :create do
-  if not exists?
+  unless exists?
     password = @new_resource.password ? @new_resource.password : secure_password
     execute "newlist #{@new_resource.name}" do
       command "newlist -q #{new_resource.name} #{new_resource.email} #{password}"
@@ -31,12 +29,12 @@ action :create do
   end
   template "/etc/mailman/aliases/#{@new_resource.name}" do
     source "mailman_aliases.erb"
-    variables ({:name => new_resource.name})
+    variables(name: new_resource.name)
     cookbook "mailman"
   end
   execute "newaliases" do
     action :nothing
-    subscribes :run, resources(:template => "/etc/mailman/aliases/#{new_resource.name}")
+    subscribes :run, template["/etc/mailman/aliases/#{new_resource.name}"]
   end
 end
 
@@ -52,5 +50,5 @@ end
 
 def exists?
   cmd = shell_out("list_lists")
-  return cmd.stdout.downcase.include?(new_resource.name.downcase)
+  cmd.stdout.downcase.include?(new_resource.name.downcase)
 end

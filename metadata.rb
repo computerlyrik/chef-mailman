@@ -1,3 +1,4 @@
+name             "mailman"
 maintainer       "computerlyrik"
 maintainer_email "chef-cookbooks@computerlyrik.de"
 license          "Apache 2.0"
@@ -6,3 +7,4 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          "0.9.6"
 
 depends "openssl"
+depends "apache2"
